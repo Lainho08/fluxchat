@@ -1,0 +1,109 @@
+// Prisma schema for Omegle Clone Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ChatMode {
+  TEXT
+  VIDEO
+  AUDIO
+}
+
+enum LogLevel {
+  INFO
+  WARN
+  ERROR
+}
+
+model User {
+  id            String          @id @default(uuid())
+  email         String?         @unique
+  username      String          @default("Anonymous")
+  passwordHash  String?
+  isGuest       Boolean         @default(true)
+  avatar        String?
+  role          Role            @default(USER)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  sessions      Session[]
+  interests     UserInterest[]
+  connections1  ConnectionHistory[] @relation("User1Connections")
+  connections2  ConnectionHistory[] @relation("User2Connections")
+
+  @@map("users")
+}
+
+model Session {
+  id          String    @id @default(uuid())
+  userId      String
+  token       String    @unique
+  ipAddress   String?
+  userAgent   String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  endedAt     DateTime?
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Interest {
+  id        String         @id @default(uuid())
+  name      String         @unique
+  createdAt DateTime       @default(now())
+
+  users     UserInterest[]
+
+  @@map("interests")
+}
+
+model UserInterest {
+  userId     String
+  interestId String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([userId, interestId])
+  @@map("user_interests")
+}
+
+model ConnectionHistory {
+  id              String    @id @default(uuid())
+  user1Id         String
+  user2Id         String
+  mode            ChatMode  @default(TEXT)
+  roomId          String?
+  startedAt       DateTime  @default(now())
+  endedAt         DateTime?
+  durationSeconds Int?
+
+  user1           User      @relation("User1Connections", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2           User      @relation("User2Connections", fields: [user2Id], references: [id], onDelete: Cascade)
+
+  @@map("connection_histories")
+}
+
+model Log {
+  id        String   @id @default(uuid())
+  level     LogLevel @default(INFO)
+  message   String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@map("logs")
+}
