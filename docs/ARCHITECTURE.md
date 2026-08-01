@@ -1,4 +1,4 @@
-# Arquitetura do Sistema - Omegle Next
+# Arquitetura do Sistema - FluxChat
 
 ## 1. Visão Geral
 A plataforma é baseada em uma arquitetura de microsserviços e comunicação bidirecional em tempo real para permitir conexões ultrarrápidas entre usuários desconhecidos via texto, áudio e vídeo.

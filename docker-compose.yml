@@ -3,12 +3,12 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: omegle_postgres
+    container_name: fluxchat_postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespassword
-      POSTGRES_DB: omegle_db
+      POSTGRES_DB: fluxchat_db
     ports:
       - "5432:5432"
     volumes:
@@ -21,7 +21,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: omegle_redis
+    container_name: fluxchat_redis
     restart: always
     ports:
       - "6379:6379"
@@ -37,16 +37,16 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.backend
-    container_name: omegle_backend
+    container_name: fluxchat_backend
     restart: always
     ports:
       - "4000:4000"
     environment:
       PORT: 4000
       NODE_ENV: production
-      DATABASE_URL: postgresql://postgres:postgrespassword@postgres:5432/omegle_db?schema=public
+      DATABASE_URL: postgresql://postgres:postgrespassword@postgres:5432/fluxchat_db?schema=public
       REDIS_URL: redis://redis:6379
-      JWT_SECRET: production-secret-key-omegle-platform
+      JWT_SECRET: production-secret-key-fluxchat-platform
       JWT_EXPIRES_IN: 7d
       CORS_ORIGIN: http://localhost:3000
     depends_on:
@@ -59,7 +59,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.frontend
-    container_name: omegle_frontend
+    container_name: fluxchat_frontend
     restart: always
     ports:
       - "3000:3000"

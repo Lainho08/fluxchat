@@ -20,7 +20,7 @@ export const Header: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">
-              OmegleNext
+              FluxChat
             </span>
             <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 -mt-1">
               Live Connect

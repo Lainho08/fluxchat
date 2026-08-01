@@ -29,7 +29,7 @@ async function main() {
   console.log('✅ Default interests seeded.');
 
   // 2. Create Admin User (Optional / Initial Seed)
-  const adminEmail = 'admin@omegleclone.com';
+  const adminEmail = 'admin@fluxchat.com';
   // Password hash for 'Admin123!' (using bcrypt pre-computed or generated)
   // $2a$10$wO8l2K4gG5H9HqG/Fk4Pq.Q.R5Hq8A3PzYJ9J2J3J4J5J6J7J8J9
   const bcrypt = await import('bcryptjs');

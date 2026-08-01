@@ -10,7 +10,7 @@ import { WebRTCProvider } from '../contexts/WebRTCContext';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'OmegleNext - Plataforma de Chat Anônimo em Tempo Real',
+  title: 'FluxChat - Plataforma de Chat Anônimo em Tempo Real',
   description: 'Conecte-se instantaneamente a pessoas ao redor do mundo por texto, voz e vídeo.',
 };
 

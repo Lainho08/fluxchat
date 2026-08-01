@@ -1,4 +1,4 @@
-# 🚀 OmegleNext - Plataforma de Chat Anônimo em Tempo Real
+# 🚀 FluxChat - Plataforma de Chat Anônimo em Tempo Real
 
 Aplicação web moderna, responsiva e de alta performance inspirada no Omegle, com suporte a chats por **Texto**, **Áudio** e **Vídeo (WebRTC)** em tempo real, sistema de **Matchmaking com Redis**, cadastro/opção anônima, gerenciamento de interesses e **Painel Administrativo**.
 
@@ -79,8 +79,8 @@ Requisitos: Docker e Docker Compose instalados.
 
 1. Clone o repositório e acesse a pasta raiz:
 ```bash
-git clone https://github.com/seu-usuario/omegle-clone.git
-cd omegle-clone
+git clone https://github.com/Lainho08/fluxchat.git
+cd fluxchat
 ```
 
 2. Suba a aplicação inteira (Frontend, Backend, PostgreSQL e Redis) com um único comando:
@@ -146,7 +146,7 @@ Abra seu navegador em `http://localhost:3000`.
 
 ## 🔑 Credenciais do Administrador (Padrão)
 
-- **Email:** `admin@omegleclone.com`
+- **Email:** `admin@fluxchat.com`
 - **Senha:** `Admin123!`
 - **Acesso ao Painel Admin:** [http://localhost:3000/admin](http://localhost:3000/admin)
 
