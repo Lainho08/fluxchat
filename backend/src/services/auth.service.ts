@@ -15,7 +15,9 @@ export class AuthService {
   async register(dto: RegisterDto, userAgent?: string, ipAddress?: string) {
     const existing = await this.userRepo.findByEmail(dto.email);
     if (existing) {
-      throw new Error('Este email já está cadastrado');
+      const err: any = new Error('Este email já está cadastrado');
+      err.statusCode = 400;
+      throw err;
     }
 
     const passwordHash = await hashPassword(dto.password);
@@ -48,12 +50,16 @@ export class AuthService {
   async login(dto: LoginDto, userAgent?: string, ipAddress?: string) {
     const user = await this.userRepo.findByEmail(dto.email);
     if (!user || !user.passwordHash) {
-      throw new Error('Credenciais inválidas');
+      const err: any = new Error('Credenciais inválidas');
+      err.statusCode = 400;
+      throw err;
     }
 
     const isValid = await comparePassword(dto.password, user.passwordHash);
     if (!isValid) {
-      throw new Error('Credenciais inválidas');
+      const err: any = new Error('Credenciais inválidas');
+      err.statusCode = 400;
+      throw err;
     }
 
     const payload = {
