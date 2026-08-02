@@ -1,8 +1,7 @@
 import { prisma } from '../config/prisma';
-import { ChatMode, LogLevel } from '@prisma/client';
 
 export class LogRepository {
-  async createLog(level: LogLevel, message: string, metadata?: any) {
+  async createLog(level: string, message: string, metadata?: any) {
     return prisma.log.create({
       data: {
         level,
@@ -19,7 +18,7 @@ export class LogRepository {
     });
   }
 
-  async createConnectionRecord(user1Id: string, user2Id: string, mode: ChatMode, roomId?: string) {
+  async createConnectionRecord(user1Id: string, user2Id: string, mode: string, roomId?: string) {
     return prisma.connectionHistory.create({
       data: {
         user1Id,

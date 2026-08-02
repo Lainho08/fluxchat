@@ -5,7 +5,6 @@ import { LogRepository } from '../repositories/log.repository';
 import { hashPassword, comparePassword } from '../utils/password';
 import { generateToken } from '../utils/jwt';
 import { RegisterDto, LoginDto, GuestAuthDto } from '../dtos/auth.dto';
-import { LogLevel } from '@prisma/client';
 
 export class AuthService {
   private userRepo = new UserRepository();
@@ -34,14 +33,14 @@ export class AuthService {
       userId: user.id,
       email: user.email,
       username: user.username,
-      role: user.role,
+      role: user.role as 'USER' | 'ADMIN',
       isGuest: false,
     };
 
     const token = generateToken(payload);
     await this.sessionRepo.createSession(user.id, token, userAgent, ipAddress);
 
-    await this.logRepo.createLog(LogLevel.INFO, `New user registered: ${user.email}`, { userId: user.id });
+    await this.logRepo.createLog('INFO', `New user registered: ${user.email}`, { userId: user.id });
 
     return { user: payload, token };
   }
@@ -61,14 +60,14 @@ export class AuthService {
       userId: user.id,
       email: user.email,
       username: user.username,
-      role: user.role,
+      role: user.role as 'USER' | 'ADMIN',
       isGuest: false,
     };
 
     const token = generateToken(payload);
     await this.sessionRepo.createSession(user.id, token, userAgent, ipAddress);
 
-    await this.logRepo.createLog(LogLevel.INFO, `User logged in: ${user.email}`, { userId: user.id });
+    await this.logRepo.createLog('INFO', `User logged in: ${user.email}`, { userId: user.id });
 
     return { user: payload, token };
   }
@@ -84,7 +83,7 @@ export class AuthService {
       userId: guestUser.id,
       email: null,
       username: guestUser.username,
-      role: guestUser.role,
+      role: guestUser.role as 'USER' | 'ADMIN',
       isGuest: true,
     };
 

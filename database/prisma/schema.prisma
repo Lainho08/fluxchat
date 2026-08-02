@@ -1,29 +1,12 @@
-// Prisma schema for Omegle Clone Platform
+// Prisma schema for Omegle Clone Platform (SQLite for local dev zero-config)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-enum Role {
-  USER
-  ADMIN
-}
-
-enum ChatMode {
-  TEXT
-  VIDEO
-  AUDIO
-}
-
-enum LogLevel {
-  INFO
-  WARN
-  ERROR
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -33,7 +16,7 @@ model User {
   passwordHash  String?
   isGuest       Boolean         @default(true)
   avatar        String?
-  role          Role            @default(USER)
+  role          String          @default("USER")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
@@ -86,7 +69,7 @@ model ConnectionHistory {
   id              String    @id @default(uuid())
   user1Id         String
   user2Id         String
-  mode            ChatMode  @default(TEXT)
+  mode            String    @default("TEXT")
   roomId          String?
   startedAt       DateTime  @default(now())
   endedAt         DateTime?
@@ -100,9 +83,9 @@ model ConnectionHistory {
 
 model Log {
   id        String   @id @default(uuid())
-  level     LogLevel @default(INFO)
+  level     String   @default("INFO")
   message   String
-  metadata  Json?
+  metadata  String?
   createdAt DateTime @default(now())
 
   @@map("logs")
