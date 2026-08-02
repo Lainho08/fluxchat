@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { SOCKET_URL } from '../utils/constants';
+import { getSocketUrl } from '../utils/constants';
 import { useAuth } from './AuthContext';
 
 interface SocketContextType {
@@ -21,7 +21,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const socketInstance = io(SOCKET_URL, {
+    const socketUrl = getSocketUrl();
+    const socketInstance = io(socketUrl, {
       auth: { token },
       autoConnect: true,
       reconnection: true,
