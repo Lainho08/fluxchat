@@ -34,7 +34,9 @@ export default function RegisterPage() {
       login(response.data.token, response.data.user);
       router.push('/');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Erro ao realizar cadastro');
+      console.error('Register error:', err);
+      const msg = err.response?.data?.error || err.response?.data?.message || err.message || 'Erro ao realizar cadastro';
+      setError(msg);
     } finally {
       setIsLoading(false);
     }
