@@ -6,8 +6,9 @@ import { MessageSquare, Video, Mic, Sparkles, UserCheck } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { InterestInput } from './InterestInput';
+import { GenderSelector } from './GenderSelector';
 import { useAuth } from '../../contexts/AuthContext';
-import { ChatMode } from '../../types';
+import { ChatMode, Gender, PartnerGenderPreference } from '../../types';
 
 export const HeroSection: React.FC = () => {
   const router = useRouter();
@@ -15,6 +16,8 @@ export const HeroSection: React.FC = () => {
 
   const [selectedMode, setSelectedMode] = useState<ChatMode>('VIDEO');
   const [interests, setInterests] = useState<string[]>([]);
+  const [partnerGender, setPartnerGender] = useState<PartnerGenderPreference>('BOTH');
+  const [myGender, setMyGender] = useState<Gender>('UNSPECIFIED');
   const [isConnecting, setIsConnecting] = useState(false);
 
   const handleStartChat = async () => {
@@ -23,8 +26,18 @@ export const HeroSection: React.FC = () => {
       if (!user) {
         await guestLogin(interests);
       }
-      const queryInterests = interests.length > 0 ? `?interests=${encodeURIComponent(interests.join(','))}` : '';
-      router.push(`/chat?mode=${selectedMode.toLowerCase()}${queryInterests ? '&' + queryInterests.substring(1) : ''}`);
+      const params = new URLSearchParams();
+      params.set('mode', selectedMode.toLowerCase());
+      if (partnerGender !== 'BOTH') {
+        params.set('partnerGender', partnerGender);
+      }
+      if (myGender !== 'UNSPECIFIED') {
+        params.set('myGender', myGender);
+      }
+      if (interests.length > 0) {
+        params.set('interests', interests.join(','));
+      }
+      router.push(`/chat?${params.toString()}`);
     } catch (error) {
       console.error('Error initiating chat:', error);
       setIsConnecting(false);
@@ -108,6 +121,14 @@ export const HeroSection: React.FC = () => {
 
             {/* Interest Tags */}
             <InterestInput interests={interests} onChange={setInterests} />
+
+            {/* Gender Preferences */}
+            <GenderSelector
+              partnerGender={partnerGender}
+              onPartnerGenderChange={setPartnerGender}
+              myGender={myGender}
+              onMyGenderChange={setMyGender}
+            />
 
             {/* Main Call To Action */}
             <div className="flex flex-col gap-3 pt-2">

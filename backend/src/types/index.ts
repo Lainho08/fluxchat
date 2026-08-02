@@ -15,12 +15,17 @@ export interface AuthenticatedRequest extends Request {
 
 export type ChatMode = 'TEXT' | 'VIDEO' | 'AUDIO';
 
+export type Gender = 'MALE' | 'FEMALE' | 'UNSPECIFIED';
+export type PartnerGenderPreference = 'MALE' | 'FEMALE' | 'BOTH';
+
 export interface MatchmakingCandidate {
   socketId: string;
   userId: string;
   username: string;
   mode: ChatMode;
   interests: string[];
+  gender?: Gender;
+  genderPreference?: PartnerGenderPreference;
   joinedAt: number;
 }
 
@@ -29,4 +34,6 @@ export interface AuthenticatedSocket extends Socket {
   roomId?: string;
   mode?: ChatMode;
   interests?: string[];
+  gender?: Gender;
+  genderPreference?: PartnerGenderPreference;
 }

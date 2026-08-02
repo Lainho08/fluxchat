@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSocket } from '../../contexts/SocketContext';
 import { useWebRTC } from '../../contexts/WebRTCContext';
@@ -8,13 +8,15 @@ import { Header } from '../../components/home/Header';
 import { VideoChat } from '../../components/chat/VideoChat';
 import { TextChat } from '../../components/chat/TextChat';
 import { MediaControls } from '../../components/chat/MediaControls';
-import { ChatMessage, ChatMode } from '../../types';
+import { ChatMessage, ChatMode, Gender, PartnerGenderPreference } from '../../types';
 
-export default function ChatPage() {
+function ChatContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const mode: ChatMode = (searchParams.get('mode')?.toUpperCase() as ChatMode) || 'VIDEO';
+  const partnerGender = (searchParams.get('partnerGender')?.toUpperCase() as PartnerGenderPreference) || 'BOTH';
+  const myGender = (searchParams.get('myGender')?.toUpperCase() as Gender) || 'UNSPECIFIED';
   const rawInterests = searchParams.get('interests') || '';
   const interests = rawInterests ? rawInterests.split(',') : [];
 
@@ -36,8 +38,8 @@ export default function ChatPage() {
     setIsSearching(true);
     setIsPartnerTyping(false);
 
-    socket.emit('findPartner', { mode, interests });
-  }, [socket, mode, rawInterests, closePeerConnection]);
+    socket.emit('findPartner', { mode, interests, partnerGender, myGender });
+  }, [socket, mode, partnerGender, myGender, rawInterests, closePeerConnection]);
 
   // Initialize media devices for video/audio mode
   useEffect(() => {
@@ -188,5 +190,20 @@ export default function ChatPage() {
       {/* Bottom Media & Control Bar */}
       <MediaControls onSkip={handleSkip} onLeave={handleLeave} mode={mode} />
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-screen flex items-center justify-center bg-slate-950 text-slate-300">
+        <div className="flex items-center gap-3">
+          <div className="w-5 h-5 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
+          <span>Carregando sala de chat...</span>
+        </div>
+      </div>
+    }>
+      <ChatContent />
+    </Suspense>
   );
 }

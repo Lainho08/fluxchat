@@ -22,8 +22,8 @@ A plataforma é baseada em uma arquitetura de microsserviços e comunicação bi
 - **Middlewares**: Processam tokens JWT e tratamento centralizado de erros.
 
 ## 3. Fluxo de Matchmaking
-1. Usuário envia evento `findPartner` via Socket.IO contendo o modo (`TEXT`, `VIDEO`, `AUDIO`) e a lista de interesses.
-2. O `MatchmakingService` busca pares compatíveis no Redis. Se houver correspondência de interesses, conecta prioritariamente; caso contrário, utiliza a fila global FIFO.
+1. Usuário envia evento `findPartner` via Socket.IO contendo o modo (`TEXT`, `VIDEO`, `AUDIO`), lista de interesses e preferências de gênero (`partnerGender` e `myGender`).
+2. O `MatchmakingService` valida compatibilidade de gênero bidirecional e intersecção de interesses na fila de espera em memória e Redis para realizar o pareamento.
 3. Ao formar um par, uma sala exclusiva `room:<uuid>` é criada e os sockets entram no canal.
 4. Para vídeo/voz, inicia-se a negociação WebRTC (troca de SDP offer, answer e ICE candidates via Socket.IO).
 5. Mensagens instantâneas trafegam diretamente entre a sala do Socket.IO.

@@ -4,7 +4,7 @@
 
 | Evento | Payload | Descrição |
 |---|---|---|
-| `findPartner` | `{ mode: 'TEXT' \| 'VIDEO' \| 'AUDIO', interests: string[] }` | Solicita pareamento de conversa |
+| `findPartner` | `{ mode: 'TEXT' \| 'VIDEO' \| 'AUDIO', interests?: string[], partnerGender?: 'MALE' \| 'FEMALE' \| 'BOTH', myGender?: 'MALE' \| 'FEMALE' \| 'UNSPECIFIED' }` | Solicita pareamento de conversa com filtros de gênero e interesses |
 | `skipPartner` | `{}` | Cancela conversa atual e solicita novo parceiro |
 | `leaveRoom` | `{}` | Abandona a sala de conversa |
 | `sendMessage` | `{ text: string }` | Envia mensagem de texto para a sala |

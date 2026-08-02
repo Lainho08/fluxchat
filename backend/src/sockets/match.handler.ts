@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { AuthenticatedSocket, ChatMode } from '../types';
+import { AuthenticatedSocket, ChatMode, Gender, PartnerGenderPreference } from '../types';
 import { MatchmakingService } from '../services/matchmaking.service';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../utils/logger';
@@ -10,12 +10,23 @@ export function registerMatchHandlers(
   matchmakingService: MatchmakingService
 ) {
   // Event: findPartner
-  socket.on('findPartner', async (data: { mode?: ChatMode; interests?: string[] }) => {
+  socket.on('findPartner', async (data: {
+    mode?: ChatMode;
+    interests?: string[];
+    gender?: Gender;
+    myGender?: Gender;
+    genderPreference?: PartnerGenderPreference;
+    partnerGender?: PartnerGenderPreference;
+  }) => {
     const mode: ChatMode = data.mode || 'TEXT';
     const interests: string[] = data.interests || [];
+    const gender: Gender = data.gender || data.myGender || 'UNSPECIFIED';
+    const genderPreference: PartnerGenderPreference = data.genderPreference || data.partnerGender || 'BOTH';
 
     socket.mode = mode;
     socket.interests = interests;
+    socket.gender = gender;
+    socket.genderPreference = genderPreference;
 
     const candidate = {
       socketId: socket.id,
@@ -23,6 +34,8 @@ export function registerMatchHandlers(
       username: socket.user?.username || 'Estranho',
       mode,
       interests,
+      gender,
+      genderPreference,
       joinedAt: Date.now(),
     };
 

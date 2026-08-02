@@ -1,5 +1,8 @@
 export type ChatMode = 'TEXT' | 'VIDEO' | 'AUDIO';
 
+export type Gender = 'MALE' | 'FEMALE' | 'UNSPECIFIED';
+export type PartnerGenderPreference = 'MALE' | 'FEMALE' | 'BOTH';
+
 export interface UserProfile {
   id: string;
   email: string | null;

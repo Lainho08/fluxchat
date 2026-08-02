@@ -13,12 +13,25 @@ export class MatchmakingService {
   async addToQueue(candidate: MatchmakingCandidate): Promise<MatchmakingCandidate | null> {
     this.removeFromQueue(candidate.socketId);
 
-    logger.info(`Matchmaking request: Socket ${candidate.socketId} (${candidate.username}) mode=${candidate.mode} interests=[${candidate.interests.join(', ')}]`);
+    logger.info(`Matchmaking request: Socket ${candidate.socketId} (${candidate.username}) mode=${candidate.mode} gender=${candidate.gender || 'UNSPECIFIED'} pref=${candidate.genderPreference || 'BOTH'} interests=[${candidate.interests.join(', ')}]`);
 
     // Search for match in waiting pool
     for (const [otherSocketId, other] of this.waitingCandidates.entries()) {
       if (otherSocketId === candidate.socketId) continue;
       if (other.mode !== candidate.mode) continue;
+
+      // Check bidirectional gender preference compatibility
+      const candidatePrefersOther =
+        !candidate.genderPreference ||
+        candidate.genderPreference === 'BOTH' ||
+        candidate.genderPreference === (other.gender || 'UNSPECIFIED');
+
+      const otherPrefersCandidate =
+        !other.genderPreference ||
+        other.genderPreference === 'BOTH' ||
+        other.genderPreference === (candidate.gender || 'UNSPECIFIED');
+
+      if (!candidatePrefersOther || !otherPrefersCandidate) continue;
 
       // Check interest intersection
       const hasCommonInterest = candidate.interests.some((interest) =>
