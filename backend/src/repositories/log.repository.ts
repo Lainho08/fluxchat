@@ -4,7 +4,7 @@ export class LogRepository {
   async createLog(level: string, message: string, metadata?: any) {
     return prisma.log.create({
       data: {
-        level,
+        level: level as any,
         message,
         metadata: metadata ? JSON.stringify(metadata) : undefined,
       },
@@ -23,7 +23,7 @@ export class LogRepository {
       data: {
         user1Id,
         user2Id,
-        mode,
+        mode: mode as any,
         roomId,
       },
     });

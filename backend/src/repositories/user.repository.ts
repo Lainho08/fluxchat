@@ -1,5 +1,5 @@
 import { prisma } from '../config/prisma';
-import { Role, User } from '@prisma/client';
+import { User } from '@prisma/client';
 
 export class UserRepository {
   async findById(id: string) {
@@ -28,7 +28,7 @@ export class UserRepository {
     email: string;
     username: string;
     passwordHash: string;
-    role?: Role;
+    role?: 'USER' | 'ADMIN';
   }) {
     return prisma.user.create({
       data: {
@@ -36,7 +36,7 @@ export class UserRepository {
         username: data.username,
         passwordHash: data.passwordHash,
         isGuest: false,
-        role: data.role || Role.USER,
+        role: data.role || 'USER',
       },
     });
   }
