@@ -3,12 +3,14 @@ services:
     name: fluxchat-backend
     env: node
     buildCommand: cd backend && npm install && npx prisma db push --schema=../database/prisma/schema.prisma && npx prisma generate --schema=../database/prisma/schema.prisma && npm run build
-    startCommand: cd backend && node dist/server.js
+    startCommand: cd backend && npx prisma db push --schema=../database/prisma/schema.prisma && node ../database/prisma/seed.js && node dist/server.js
     envVars:
       - key: PORT
         value: 10000
       - key: NODE_ENV
         value: production
+      - key: DATABASE_URL
+        value: file:../database/prisma/dev.db
       - key: JWT_SECRET
         value: fluxchat-secret-key-production-2026
       - key: CORS_ORIGIN
