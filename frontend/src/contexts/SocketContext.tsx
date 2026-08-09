@@ -26,7 +26,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       auth: { token },
       autoConnect: true,
       reconnection: true,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 10000,
+      // Prefer WebSocket, fall back to polling (needed for Render cold start)
+      transports: ['websocket', 'polling'],
+      // Render free tier can take up to 60s to wake up
+      timeout: 60000,
     });
 
     socketInstance.on('connect', () => {
