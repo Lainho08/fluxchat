@@ -13,9 +13,34 @@ export class MatchmakingService {
   async addToQueue(candidate: MatchmakingCandidate): Promise<MatchmakingCandidate | null> {
     this.removeFromQueue(candidate.socketId);
 
-    logger.info(`Matchmaking request: Socket ${candidate.socketId} (${candidate.username}) mode=${candidate.mode} gender=${candidate.gender || 'UNSPECIFIED'} pref=${candidate.genderPreference || 'BOTH'} interests=[${candidate.interests.join(', ')}]`);
+    logger.info(
+      `Matchmaking request: Socket ${candidate.socketId} (${candidate.username}) ` +
+      `mode=${candidate.mode} gender=${candidate.gender || 'UNSPECIFIED'} ` +
+      `pref=${candidate.genderPreference || 'BOTH'} ` +
+      `country=${candidate.countryCode || '??'} countryPref=${candidate.countryPreference || 'ANY'} ` +
+      `interests=[${candidate.interests.join(', ')}]`
+    );
 
-    // Search for match in waiting pool
+    // --- Phase 1: Try to match with preferred country ---
+    const phaseOneMatch = this.findMatch(candidate, /* requireCountry */ true);
+    if (phaseOneMatch) return phaseOneMatch;
+
+    // --- Phase 2: Fallback — match with any country ---
+    const phaseTwoMatch = this.findMatch(candidate, /* requireCountry */ false);
+    if (phaseTwoMatch) return phaseTwoMatch;
+
+    // No match found yet — add to waiting pool
+    this.waitingCandidates.set(candidate.socketId, candidate);
+    await redis.sadd(`queue:${candidate.mode}`, candidate.socketId);
+
+    return null;
+  }
+
+  /**
+   * Searches the waiting pool for a compatible candidate.
+   * @param requireCountry If true, also checks country preference compatibility.
+   */
+  private findMatch(candidate: MatchmakingCandidate, requireCountry: boolean): MatchmakingCandidate | null {
     for (const [otherSocketId, other] of this.waitingCandidates.entries()) {
       if (otherSocketId === candidate.socketId) continue;
       if (other.mode !== candidate.mode) continue;
@@ -34,27 +59,30 @@ export class MatchmakingService {
       if (!candidatePrefersOther || !otherPrefersCandidate) continue;
 
       // Check interest intersection
-      const hasCommonInterest = candidate.interests.some((interest) =>
-        other.interests.includes(interest)
-      );
-
-      // If either user has no interests or there's a common interest, match them!
+      const hasCommonInterest = candidate.interests.some((i) => other.interests.includes(i));
       const canMatch =
         candidate.interests.length === 0 ||
         other.interests.length === 0 ||
         hasCommonInterest;
 
-      if (canMatch) {
-        this.waitingCandidates.delete(otherSocketId);
-        return other;
+      if (!canMatch) continue;
+
+      // Check country preference (only in phase 1)
+      if (requireCountry) {
+        const myCandidateWantsCountry = candidate.countryPreference && candidate.countryPreference !== 'ANY';
+        const otherWantsCountry = other.countryPreference && other.countryPreference !== 'ANY';
+
+        // If I have a country preference, the other must be from that country
+        if (myCandidateWantsCountry && other.countryCode !== candidate.countryPreference) continue;
+
+        // If the other has a country preference, I must be from that country
+        if (otherWantsCountry && candidate.countryCode !== other.countryPreference) continue;
       }
+
+      // ✅ Found a match!
+      this.waitingCandidates.delete(otherSocketId);
+      return other;
     }
-
-    // No match found yet, store in waiting candidates
-    this.waitingCandidates.set(candidate.socketId, candidate);
-
-    // Also register in Redis for analytics / distributed queue awareness
-    await redis.sadd(`queue:${candidate.mode}`, candidate.socketId);
 
     return null;
   }
@@ -75,7 +103,6 @@ export class MatchmakingService {
       createdAt: new Date(),
     });
 
-    // Record in DB async
     this.logRepo.createConnectionRecord(
       candidate1.userId,
       candidate2.userId,

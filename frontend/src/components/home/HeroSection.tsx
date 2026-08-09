@@ -7,6 +7,7 @@ import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { InterestInput } from './InterestInput';
 import { GenderSelector } from './GenderSelector';
+import { CountrySelector } from './CountrySelector';
 import { useAuth } from '../../contexts/AuthContext';
 import { ChatMode, Gender, PartnerGenderPreference } from '../../types';
 
@@ -18,6 +19,7 @@ export const HeroSection: React.FC = () => {
   const [interests, setInterests] = useState<string[]>([]);
   const [partnerGender, setPartnerGender] = useState<PartnerGenderPreference>('BOTH');
   const [myGender, setMyGender] = useState<Gender>('UNSPECIFIED');
+  const [countryPreference, setCountryPreference] = useState<string>('ANY');
   const [isConnecting, setIsConnecting] = useState(false);
 
   const handleStartChat = async () => {
@@ -37,12 +39,16 @@ export const HeroSection: React.FC = () => {
       if (interests.length > 0) {
         params.set('interests', interests.join(','));
       }
+      if (countryPreference !== 'ANY') {
+        params.set('countryPreference', countryPreference);
+      }
       router.push(`/chat?${params.toString()}`);
     } catch (error) {
       console.error('Error initiating chat:', error);
       setIsConnecting(false);
     }
   };
+
 
   return (
     <section className="relative overflow-hidden py-12 lg:py-20 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -121,6 +127,9 @@ export const HeroSection: React.FC = () => {
 
             {/* Interest Tags */}
             <InterestInput interests={interests} onChange={setInterests} />
+
+            {/* Country Filter */}
+            <CountrySelector value={countryPreference} onChange={setCountryPreference} />
 
             {/* Gender Preferences */}
             <GenderSelector

@@ -6,11 +6,13 @@ import { useWebRTC } from '../../contexts/WebRTCContext';
 
 interface VideoChatProps {
   partnerName: string | null;
+  partnerFlag?: string | null;
+  partnerCountry?: string | null;
   isSearching: boolean;
   mode: 'VIDEO' | 'AUDIO';
 }
 
-export const VideoChat: React.FC<VideoChatProps> = ({ partnerName, isSearching, mode }) => {
+export const VideoChat: React.FC<VideoChatProps> = ({ partnerName, partnerFlag, partnerCountry, isSearching, mode }) => {
   const { localStream, remoteStream, isVideoMuted, isAudioMuted } = useWebRTC();
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -59,8 +61,10 @@ export const VideoChat: React.FC<VideoChatProps> = ({ partnerName, isSearching, 
                 <audio ref={remoteVideoRef as any} autoPlay />
               </div>
             )}
-            <div className="absolute top-4 left-4 bg-slate-950/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-800 text-xs text-white font-medium">
+            <div className="absolute top-4 left-4 bg-slate-950/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-800 text-xs text-white font-medium flex items-center gap-1.5">
+              {partnerFlag && <span className="text-base leading-none">{partnerFlag}</span>}
               Estranho: <span className="font-bold text-sky-400">{partnerName}</span>
+              {partnerCountry && <span className="text-slate-400 text-[10px]">({partnerCountry})</span>}
             </div>
           </>
         ) : (

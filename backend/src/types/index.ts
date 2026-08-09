@@ -26,6 +26,9 @@ export interface MatchmakingCandidate {
   interests: string[];
   gender?: Gender;
   genderPreference?: PartnerGenderPreference;
+  country?: string;           // ex: "Brazil"
+  countryCode?: string;       // ex: "BR"
+  countryPreference?: string; // código ISO do país preferido, ex: "BR"
   joinedAt: number;
 }
 
@@ -36,4 +39,7 @@ export interface AuthenticatedSocket extends Socket {
   interests?: string[];
   gender?: Gender;
   genderPreference?: PartnerGenderPreference;
+  country?: string;
+  countryCode?: string;
+  countryPreference?: string;
 }

@@ -19,11 +19,14 @@ function ChatContent() {
   const myGender = (searchParams.get('myGender')?.toUpperCase() as Gender) || 'UNSPECIFIED';
   const rawInterests = searchParams.get('interests') || '';
   const interests = rawInterests ? rawInterests.split(',') : [];
+  const countryPreference = searchParams.get('countryPreference') || 'ANY';
 
   const { socket, isConnected } = useSocket();
   const { startLocalMedia, stopLocalMedia, initiatePeerConnection, closePeerConnection } = useWebRTC();
 
   const [partnerName, setPartnerName] = useState<string | null>(null);
+  const [partnerCountry, setPartnerCountry] = useState<string | null>(null);
+  const [partnerFlag, setPartnerFlag] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(true);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isPartnerTyping, setIsPartnerTyping] = useState(false);
@@ -38,7 +41,7 @@ function ChatContent() {
     setIsSearching(true);
     setIsPartnerTyping(false);
 
-    socket.emit('findPartner', { mode, interests, partnerGender, myGender });
+    socket.emit('findPartner', { mode, interests, partnerGender, myGender, countryPreference });
   }, [socket, mode, partnerGender, myGender, rawInterests, closePeerConnection]);
 
   // Initialize media devices for video/audio mode
@@ -63,9 +66,14 @@ function ChatContent() {
       roomId: string;
       partnerId: string;
       partnerName: string;
+      partnerCountry: string | null;
+      partnerCountryCode: string | null;
+      partnerFlag: string | null;
       isInitiator: boolean;
     }) => {
       setPartnerName(data.partnerName);
+      setPartnerCountry(data.partnerCountry);
+      setPartnerFlag(data.partnerFlag);
       setIsSearching(false);
       setMessages([]);
 
@@ -77,8 +85,9 @@ function ChatContent() {
     const handlePartnerLeft = () => {
       closePeerConnection();
       setPartnerName(null);
+      setPartnerCountry(null);
+      setPartnerFlag(null);
       setIsSearching(true);
-      // Auto reconnect to next partner
       findPartner();
     };
 
@@ -172,7 +181,7 @@ function ChatContent() {
         {/* Left Side Video/Audio Frame or Full Text Chat */}
         {mode !== 'TEXT' ? (
           <div className="w-full md:w-3/5 lg:w-2/3 h-1/2 md:h-full bg-slate-950">
-            <VideoChat partnerName={partnerName} isSearching={isSearching} mode={mode} />
+            <VideoChat partnerName={partnerName} partnerFlag={partnerFlag} partnerCountry={partnerCountry} isSearching={isSearching} mode={mode} />
           </div>
         ) : null}
 
@@ -183,6 +192,9 @@ function ChatContent() {
             onSendMessage={handleSendMessage}
             isPartnerTyping={isPartnerTyping}
             isConnectedPartner={!!partnerName}
+            partnerName={partnerName}
+            partnerFlag={partnerFlag}
+            partnerCountry={partnerCountry}
           />
         </div>
       </div>

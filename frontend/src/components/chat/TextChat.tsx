@@ -10,6 +10,9 @@ interface TextChatProps {
   onSendMessage: (text: string) => void;
   isPartnerTyping: boolean;
   isConnectedPartner: boolean;
+  partnerName?: string | null;
+  partnerFlag?: string | null;
+  partnerCountry?: string | null;
 }
 
 export const TextChat: React.FC<TextChatProps> = ({
@@ -17,6 +20,9 @@ export const TextChat: React.FC<TextChatProps> = ({
   onSendMessage,
   isPartnerTyping,
   isConnectedPartner,
+  partnerName,
+  partnerFlag,
+  partnerCountry,
 }) => {
   const { socket } = useSocket();
   const [inputText, setInputText] = useState('');
@@ -64,9 +70,25 @@ export const TextChat: React.FC<TextChatProps> = ({
     <div className="w-full h-full flex flex-col bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800">
       {/* Header */}
       <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 flex items-center justify-between">
-        <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
-          {isConnectedPartner ? 'Conversa Ativa' : 'Aguardando parceiro...'}
-        </span>
+        <div className="flex items-center gap-2">
+          {isConnectedPartner && partnerFlag ? (
+            <>
+              <span className="text-xl leading-none">{partnerFlag}</span>
+              <div>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                  {partnerName || 'Estranho'}
+                </span>
+                {partnerCountry && (
+                  <p className="text-[10px] text-slate-400 leading-none mt-0.5">{partnerCountry}</p>
+                )}
+              </div>
+            </>
+          ) : (
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+              {isConnectedPartner ? 'Conversa Ativa' : 'Aguardando parceiro...'}
+            </span>
+          )}
+        </div>
         <span className="text-[10px] text-slate-400 font-medium">Enter para enviar</span>
       </div>
 
