@@ -1,8 +1,20 @@
 {
+  "name": "fluxchat",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,magenta.bold\" -n \"backend,frontend\" \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "start": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,magenta.bold\" -n \"backend,frontend\" \"npm --prefix backend run start\" \"npm --prefix frontend run start\""
+  },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "prisma": "^5.22.0"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0"
   }
 }
+
